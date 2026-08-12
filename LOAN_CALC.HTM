@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Loan Calculator</title>
+	</head>
+	<body>
+		<h1>Quick & dirty loan calculator</h1>
+		<b>Loan principal to be paid: </b><input type="textbox" id="in1"><br>
+		<b>Interest per anum: </b><input type="textbox" id="in2"><br>
+		<b>Total amount of months to repay: </b><input type="text" id="in3">
+		<br><b>OR </b>(clear total amount of months to repay field if you want to use target instalment per month field instead)<br>
+		<b>Target instalment per month: </b><input type="text" id="in4">
+		<br><br>
+		<input type="button" value="count" id="cnt" onclick="javascript:COUNT();">
+		<br><hr><hr>
+		<div id="out"></div>
+		<script type="text/javascript">
+			Number.prototype.round = function(places) {
+				return +(Math.round(this + "e+" + places)  + "e-" + places);
+			}
+			function COUNT(){
+				var TOPAY = parseInt(document.getElementById("in1").value.trim(),10);
+				var INTEREST = parseInt(document.getElementById("in2").value.trim(),10);
+				var TOTALMONTH = parseInt(document.getElementById("in3").value.trim(),10);
+				var TARGETINSTAL = parseInt(document.getElementById("in4").value.trim(),10);
+				var MI = INTEREST/12;
+				if(document.getElementById("in3").value.trim() == ""){
+					var vd = TOPAY;
+					TOTALMONTH = 0;
+					for (var i = 0; i < 10000; i++){
+						vd = vd-(TARGETINSTAL-((vd/100)*MI));
+						TOTALMONTH = TOTALMONTH+1;
+						if (vd < 0) break;
+					}
+				}
+				var TOTINTER = 0;
+				var MP = TOPAY/TOTALMONTH;
+				var C = TOPAY;
+				for (var i = 0; i < TOTALMONTH; i++){
+					TOTINTER = TOTINTER+(C/100)*MI;
+					C = C-MP;
+				}
+				var SUPTOT = TOTINTER+TOPAY;
+				var R = "<b>Interest per month: </b>"+MI.round(2)+"%<br><b>Total to be paid: </b>"+(Math.round(SUPTOT))+"<br><b>Total Amount of months: </b>"+TOTALMONTH+"<br><br><b>Monthly total payment will be: </b>"+(Math.round(SUPTOT/TOTALMONTH))+"<br><br><b>Principal to be paid: </b>"+(Math.round(TOPAY))+"<br><b>Interest to be paid: </b>"+(Math.round(TOTINTER))+"<hr>";
+				var A = 0;
+				var A2 = 0;
+				var CI = TOPAY;
+				var INTP = 0;
+				for(var i = 0; i < TOTALMONTH; i++){
+					var CU = (CI/100)*MI;
+					var OA = A;
+					A = A+CU;
+					var B = 0;
+					var M = (SUPTOT/TOTALMONTH)-CU;
+					CI = CI-M;
+					var CII = CI;
+					for(var j = i+1; j < TOTALMONTH; j++){
+						var CUU = (CII/100)*MI;
+						var MM = (SUPTOT/TOTALMONTH)-CUU;
+						B = B+CUU;
+						CII = CII-MM;
+					}
+					var OINTP = INTP;
+					INTP = INTP+M;
+					R += "<hr><b>Month no.</b>"+(i+1)+":<br><br><b>Already paid: </b>"+(Math.round(OINTP+OA))+"<br><b>Already paid principal: </b>"+(Math.round(OINTP))+"<br><b>Already paid interest: </b>"+(Math.round(OA))+"<br><br><b>Remaining Total: </b>"+Math.round(SUPTOT-(INTP+A))+"<br><b>Remaining principal: </b>"+(Math.round(CI))+"<br><b>Remaining interest: </b>"+(Math.round(B))+"<br><br><b>Interest to be paid this month: </b>"+(Math.round(CU))+"<br><b>Principal to be paid this month: </b>"+(Math.round(M))+"<br>";
+				}
+				document.getElementById("out").innerHTML = R;
+			}
+		</script>
+	</body>
+</html>
